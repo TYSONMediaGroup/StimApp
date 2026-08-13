@@ -38,6 +38,25 @@ function App() {
     setAudioMode(visualMode);
   }, [visualMode]);
 
+  // Track usage time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      try {
+        const statsStr = localStorage.getItem('stimapp_usage_stats');
+        const stats = statsStr ? JSON.parse(statsStr) : { total: 0 };
+        
+        stats.total = (stats.total || 0) + 1;
+        stats[visualMode] = (stats[visualMode] || 0) + 1;
+        
+        localStorage.setItem('stimapp_usage_stats', JSON.stringify(stats));
+      } catch (e) {
+        console.error("Could not save stats", e);
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [visualMode]);
+
   const handleVolumeChange = (vol: number) => {
     setVolume(vol);
     localStorage.setItem('stimapp_volume', vol.toString());

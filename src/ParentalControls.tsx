@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logo from './assets/logo.png';
 import './ParentalControls.css';
 
 interface ParentalControlsProps {
@@ -114,10 +115,40 @@ export function ParentalControls({ onClose, onVolumeChange, volume }: ParentalCo
     );
   }
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
+  const getUsageStats = () => {
+    try {
+      return JSON.parse(localStorage.getItem('stimapp_usage_stats') || '{}');
+    } catch {
+      return {};
+    }
+  };
+
+  const stats = getUsageStats();
+  const totalSeconds = stats.total || 0;
+  
+  // Find most used mode
+  let mostUsedMode = 'None yet';
+  let maxTime = 0;
+  ['particles', 'fluid', 'grid', 'aura'].forEach(mode => {
+    if (stats[mode] && stats[mode] > maxTime) {
+      maxTime = stats[mode];
+      mostUsedMode = mode.charAt(0).toUpperCase() + mode.slice(1);
+    }
+  });
+
   return (
     <div className="pc-overlay">
       <div className="pc-modal">
-        <h2>Parental Controls</h2>
+        <div className="pc-header-area">
+          <img src={logo} alt="StimApp Logo" className="pc-logo" />
+          <h2>Parental Controls</h2>
+        </div>
         
         <div className="pc-section">
           <h3>Audio Limits</h3>
@@ -125,11 +156,25 @@ export function ParentalControls({ onClose, onVolumeChange, volume }: ParentalCo
             <label>Master Volume:</label>
             <input 
               type="range" 
-              min="0" max="1" step="0.05" 
+              min="0" max="1" step="0.01" 
               value={volume} 
               onChange={(e) => onVolumeChange(parseFloat(e.target.value))} 
             />
             <span>{Math.round(volume * 100)}%</span>
+          </div>
+        </div>
+
+        <div className="pc-section">
+          <h3>App Usage Statistics</h3>
+          <div className="pc-stats-grid">
+            <div className="pc-stat-item">
+              <span className="pc-stat-label">Total Time:</span>
+              <span className="pc-stat-value">{formatTime(totalSeconds)}</span>
+            </div>
+            <div className="pc-stat-item">
+              <span className="pc-stat-label">Favorite Mode:</span>
+              <span className="pc-stat-value">{mostUsedMode}</span>
+            </div>
           </div>
         </div>
 
