@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { initAudio, setAudioMode, handleAudioPointerMove, playPluck } from './audio';
+import { initAudio, setAudioMode, handleAudioPointerMove, playPluck, setMasterVolume } from './audio';
+import { ParentalControls } from './ParentalControls';
 import logo from './assets/logo.png';
 import './App.css';
 
@@ -16,10 +17,12 @@ type VisualMode = 'particles' | 'fluid' | 'grid' | 'aura';
 
 function App() {
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [liquidDrops, setLiquidDrops] = useState<{id: number, x: number, y: number}[]>([]);
+  const [liquidDrops, setLiquidDrops] = useState<{id: number, x: number, y: number, giant?: boolean}[]>([]);
   const [hue, setHue] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pcOpen, setPcOpen] = useState(false);
+  const [volume, setVolume] = useState(Number(localStorage.getItem('stimapp_volume') ?? 1.0));
   const [visualMode, setVisualMode] = useState<VisualMode>('particles');
   const lastDropTime = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +37,12 @@ function App() {
   useEffect(() => {
     setAudioMode(visualMode);
   }, [visualMode]);
+
+  const handleVolumeChange = (vol: number) => {
+    setVolume(vol);
+    localStorage.setItem('stimapp_volume', vol.toString());
+    setMasterVolume(vol);
+  };
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (containerRef.current) {
@@ -55,7 +64,7 @@ function App() {
   }, [visualMode, hasInteracted]);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('.menu-container') || (e.target as HTMLElement).closest('.menu-toggle')) {
+    if ((e.target as HTMLElement).closest('.menu-container') || (e.target as HTMLElement).closest('.menu-toggle') || (e.target as HTMLElement).closest('.pc-overlay')) {
       return;
     }
     
@@ -75,7 +84,7 @@ function App() {
       setParticles((prev) => [...prev, ...newParticles].slice(-60));
     } else if (visualMode === 'fluid') {
       const now = Date.now();
-      setLiquidDrops(prev => [...prev, { id: now, x: e.clientX, y: e.clientY }].slice(-40));
+      setLiquidDrops(prev => [...prev, { id: now, x: e.clientX, y: e.clientY, giant: true }].slice(-40));
     } else if (visualMode === 'grid') {
       playPluck(e.clientX, window.innerWidth);
     }
@@ -109,7 +118,7 @@ function App() {
             style={{ left: 'calc(var(--mouse-x, 50vw) * 1px)', top: 'calc(var(--mouse-y, 50vh) * 1px)' }}
           />
           {liquidDrops.map(drop => (
-            <div key={drop.id} className="liquid-drop" style={{ left: drop.x, top: drop.y }} />
+            <div key={drop.id} className={`liquid-drop ${drop.giant ? 'giant' : ''}`} style={{ left: drop.x, top: drop.y }} />
           ))}
         </div>
       )}
@@ -186,7 +195,20 @@ function App() {
           <button className="menu-btn" disabled>White Noise</button>
           <button className="menu-btn" disabled>Binaural Beats</button>
         </div>
+        <div className="menu-group" style={{ marginTop: 'auto' }}>
+          <button className="menu-btn pc-access-btn" onClick={() => { setPcOpen(true); setMenuOpen(false); }}>
+            Parental Controls
+          </button>
+        </div>
       </div>
+
+      {pcOpen && (
+        <ParentalControls 
+          volume={volume}
+          onVolumeChange={handleVolumeChange}
+          onClose={() => setPcOpen(false)} 
+        />
+      )}
     </div>
   );
 }

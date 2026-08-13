@@ -1,0 +1,110 @@
+.pc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pc-modal {
+  background: #111;
+  border: 1px solid #333;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.pc-modal h2 {
+  margin-top: 0;
+  font-weight: 500;
+  border-bottom: 1px solid #333;
+  padding-bottom: 1rem;
+}
+
+.pc-modal h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #aaa;
+}
+
+.pc-section {
+  background: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.pc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pc-modal input[type="text"],
+.pc-modal input[type="password"],
+.pc-modal input[type="number"] {
+  width: 100%;
+  background: #000;
+  border: 1px solid #333;
+  color: white;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.pc-modal input[type="range"] {
+  flex-grow: 1;
+}
+
+.pc-hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0;
+}
+
+.pc-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pc-btn {
+  background: #2a88ff;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.pc-btn:hover {
+  background: #1a78ef;
+}
+
+.pc-btn.cancel {
+  background: #333;
+}
+
+.pc-btn.cancel:hover {
+  background: #444;
+}
+
+.pc-btn.warning {
+  background: transparent;
+  border: 1px solid #555;
+}
+
+.pc-btn.warning:hover {
+  background: #222;
+}

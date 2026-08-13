@@ -1,5 +1,6 @@
 // Audio Context and Nodes
 let audioCtx: AudioContext | null = null;
+let masterGain: GainNode | null = null;
 let droneOsc: OscillatorNode | null = null;
 let dronePanner: StereoPannerNode | null = null;
 let droneGain: GainNode | null = null;
@@ -20,6 +21,10 @@ export function initAudio() {
   const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
   audioCtx = new AudioContextClass();
 
+  masterGain = audioCtx.createGain();
+  masterGain.connect(audioCtx.destination);
+  masterGain.gain.value = Number(localStorage.getItem('stimapp_volume') ?? 1.0);
+
   // Setup Drone for Fluid Mode
   droneOsc = audioCtx.createOscillator();
   dronePanner = audioCtx.createStereoPanner();
@@ -35,7 +40,7 @@ export function initAudio() {
   droneOsc.connect(dronePanner);
   dronePanner.connect(droneFilter);
   droneFilter.connect(droneGain);
-  droneGain.connect(audioCtx.destination);
+  droneGain.connect(masterGain);
   droneOsc.start();
 
   // Setup Pink Noise for Aura Mode
@@ -61,7 +66,7 @@ export function initAudio() {
 
   pinkNoiseSource.connect(noiseFilter);
   noiseFilter.connect(pinkNoiseGain);
-  pinkNoiseGain.connect(audioCtx.destination);
+  pinkNoiseGain.connect(masterGain);
   pinkNoiseSource.start();
 }
 
@@ -107,6 +112,12 @@ export function handleAudioPointerMove(x: number, y: number, width: number, heig
   }
 }
 
+export function setMasterVolume(val: number) {
+  if (masterGain && audioCtx) {
+    masterGain.gain.setTargetAtTime(val, audioCtx.currentTime, 0.1);
+  }
+}
+
 export function playPluck(x: number, width: number) {
   if (!audioCtx || audioCtx.state !== 'running') return;
 
@@ -123,7 +134,7 @@ export function playPluck(x: number, width: number) {
 
   osc.connect(pluckGain);
   pluckGain.connect(panner);
-  panner.connect(audioCtx.destination);
+  if (masterGain) panner.connect(masterGain);
   
   const now = audioCtx.currentTime;
   pluckGain.gain.setValueAtTime(0, now);

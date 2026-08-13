@@ -136,9 +136,20 @@
   animation: liquid-fade 1.5s ease-out forwards;
 }
 
+.liquid-drop.giant {
+  width: 250px;
+  height: 250px;
+  animation: liquid-fade-giant 1.5s ease-out forwards;
+}
+
 @keyframes liquid-fade {
   0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
   100% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+}
+
+@keyframes liquid-fade-giant {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
 }
 
 /* NEON GRID */
