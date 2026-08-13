@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { initAudio, setAudioMode, handleAudioPointerMove, playPluck } from './audio';
 import logo from './assets/logo.png';
 import './App.css';
 
@@ -30,10 +31,18 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    setAudioMode(visualMode);
+  }, [visualMode]);
+
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (containerRef.current) {
       containerRef.current.style.setProperty('--mouse-x', e.clientX.toString());
       containerRef.current.style.setProperty('--mouse-y', e.clientY.toString());
+    }
+
+    if (hasInteracted) {
+      handleAudioPointerMove(e.clientX, e.clientY, window.innerWidth, window.innerHeight, visualMode);
     }
 
     if (visualMode === 'fluid' && hasInteracted) {
@@ -49,7 +58,12 @@ function App() {
     if ((e.target as HTMLElement).closest('.menu-container') || (e.target as HTMLElement).closest('.menu-toggle')) {
       return;
     }
-    setHasInteracted(true);
+    
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      initAudio();
+      setAudioMode(visualMode);
+    }
     
     if (visualMode === 'particles') {
       const newParticles: Particle[] = Array.from({ length: 15 }).map((_, i) => ({
@@ -62,8 +76,10 @@ function App() {
     } else if (visualMode === 'fluid') {
       const now = Date.now();
       setLiquidDrops(prev => [...prev, { id: now, x: e.clientX, y: e.clientY }].slice(-40));
+    } else if (visualMode === 'grid') {
+      playPluck(e.clientX, window.innerWidth);
     }
-  }, [visualMode]);
+  }, [visualMode, hasInteracted]);
 
   return (
     <div 
