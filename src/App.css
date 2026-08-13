@@ -95,7 +95,10 @@
 /* FLUID RIPPLES (METABALLS) */
 .liquid-container {
   position: absolute;
-  inset: -100px; /* Oversize to prevent clipping */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   filter: blur(15px) contrast(40);
   background: #050505;
   z-index: 1;
@@ -142,7 +145,10 @@
   transform-style: preserve-3d;
   pointer-events: none;
   z-index: 1;
+  /* Use CSS vars for smooth transform without react re-renders */
+  transform: rotateX(60deg) translateY(calc(var(--mouse-y, 500) * 0.1px)) translateX(calc((var(--mouse-x, 500) - 50vw) * -0.05px));
   transition: transform 0.1s linear;
+  will-change: transform;
 }
 
 .neon-grid {

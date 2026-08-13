@@ -17,11 +17,11 @@ function App() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [liquidDrops, setLiquidDrops] = useState<{id: number, x: number, y: number}[]>([]);
   const [hue, setHue] = useState(0);
-  const [mousePos, setMousePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [hasInteracted, setHasInteracted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [visualMode, setVisualMode] = useState<VisualMode>('particles');
   const lastDropTime = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,12 +31,15 @@ function App() {
   }, []);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
+    if (containerRef.current) {
+      containerRef.current.style.setProperty('--mouse-x', e.clientX.toString());
+      containerRef.current.style.setProperty('--mouse-y', e.clientY.toString());
+    }
 
     if (visualMode === 'fluid' && hasInteracted) {
       const now = Date.now();
-      if (now - lastDropTime.current > 30) {
-        setLiquidDrops(prev => [...prev, { id: now, x: e.clientX, y: e.clientY }].slice(-40));
+      if (now - lastDropTime.current > 60) {
+        setLiquidDrops(prev => [...prev, { id: now, x: e.clientX, y: e.clientY }].slice(-25));
         lastDropTime.current = now;
       }
     }
@@ -64,6 +67,7 @@ function App() {
 
   return (
     <div 
+      ref={containerRef}
       className={`app-container mode-${visualMode}`}
       style={{ '--bg-hue': hue } as React.CSSProperties}
       onPointerMove={handlePointerMove}
@@ -71,9 +75,7 @@ function App() {
     >
       {/* Grid Mode Background */}
       {visualMode === 'grid' && (
-        <div className="neon-grid-container" style={{ 
-          transform: `rotateX(60deg) translateY(${mousePos.y * 0.1}px) translateX(${(mousePos.x - window.innerWidth/2) * -0.05}px)`
-        }}>
+        <div className="neon-grid-container">
           <div className="neon-grid"></div>
         </div>
       )}
@@ -83,7 +85,7 @@ function App() {
         <div className="liquid-container">
           <div 
             className="liquid-cursor" 
-            style={{ left: mousePos.x, top: mousePos.y }}
+            style={{ left: 'calc(var(--mouse-x, 50vw) * 1px)', top: 'calc(var(--mouse-y, 50vh) * 1px)' }}
           />
           {liquidDrops.map(drop => (
             <div key={drop.id} className="liquid-drop" style={{ left: drop.x, top: drop.y }} />
@@ -93,7 +95,7 @@ function App() {
 
       <div 
         className="ambient-glow" 
-        style={{ left: mousePos.x, top: mousePos.y }}
+        style={{ left: 'calc(var(--mouse-x, 50vw) * 1px)', top: 'calc(var(--mouse-y, 50vh) * 1px)' }}
       />
       
       {/* Particles Mode */}
