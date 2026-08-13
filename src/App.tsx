@@ -11,7 +11,7 @@ interface Particle {
 
 const COLORS = ['#ff2a2a', '#ff7a2a', '#ffc52a', '#43ff2a', '#2a88ff', '#9a2aff', '#ff2a88'];
 
-type VisualMode = 'particles' | 'fluid' | 'grid';
+type VisualMode = 'particles' | 'fluid' | 'grid' | 'aura';
 
 function App() {
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -73,6 +73,11 @@ function App() {
       onPointerMove={handlePointerMove}
       onPointerDown={handlePointerDown}
     >
+      {/* Breathing Aura Mode */}
+      {visualMode === 'aura' && (
+        <div className="breathing-aura" style={{ left: 'calc(var(--mouse-x, 50vw) * 1px)', top: 'calc(var(--mouse-y, 50vh) * 1px)' }} />
+      )}
+
       {/* Grid Mode Background */}
       {visualMode === 'grid' && (
         <div className="neon-grid-container">
@@ -116,7 +121,9 @@ function App() {
       <div className={`center-content ${hasInteracted ? 'dimmed' : ''}`}>
         <img src={logo} alt="StimApp Logo" className="logo" />
         <h1 className="title">StimApp</h1>
-        <p className="subtitle">{hasInteracted ? 'Sensory Active' : 'Touch anywhere to interact'}</p>
+        <p className="subtitle">
+          {hasInteracted ? 'stim.t5s.tysonmediagroup.org' : 'Touch anywhere to interact'}
+        </p>
       </div>
 
       <button 
@@ -150,6 +157,12 @@ function App() {
             onClick={() => setVisualMode('grid')}
           >
             Neon Grid
+          </button>
+          <button 
+            className={`menu-btn ${visualMode === 'aura' ? 'active' : ''}`}
+            onClick={() => setVisualMode('aura')}
+          >
+            Breathing Aura
           </button>
         </div>
         <div className="menu-group">

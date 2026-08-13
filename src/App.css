@@ -49,9 +49,10 @@
 }
 
 .title {
-  font-size: 4rem;
-  font-weight: 800;
-  letter-spacing: -0.05em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
   margin: 0;
   background: linear-gradient(135deg, #fff, #a0a0a0);
   -webkit-background-clip: text;
@@ -60,12 +61,15 @@
 }
 
 .subtitle {
-  font-size: 1.2rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
   color: #888;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-style: italic;
+  font-weight: 300;
+  text-transform: lowercase;
   margin-top: 1rem;
-  opacity: 0.7;
+  opacity: 0.8;
   transition: opacity 0.5s;
 }
 
@@ -165,6 +169,25 @@
 @keyframes gridMove {
   0% { background-position: 0 0; }
   100% { background-position: 0 100px; }
+}
+
+/* BREATHING AURA */
+.breathing-aura {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, hsla(var(--bg-hue), 100%, 50%, 0.4) 0%, transparent 60%);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 1;
+  animation: breathe 4s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
 }
 
 
